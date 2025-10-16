@@ -43,6 +43,9 @@ class Task(ToDoItem):
     def __init__(self, title: str, description: Optional[str] = None, deadline: Optional[datetime] = None):
         super().__init__(title, description)
 
+        # **NEW: Foreign Key** - This must be set by the repository when adding the task.
+        self.project_id: Optional[str] = None
+
         # Default status is 'todo' (Default Behavior Acceptance Criteria) [cite: 86]
         self.status = "todo"
         self.deadline = deadline
