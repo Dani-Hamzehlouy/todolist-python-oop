@@ -96,7 +96,6 @@ class CLIApp:
             print(f"[ERROR] Could not create project: {e}")
 
     def list_projects(self, *args):
-        # ... (implementation remains the same)
         projects = self._service.list_projects()
 
         if not projects:
@@ -106,7 +105,7 @@ class CLIApp:
         print("\n--- Projects List (Sorted by Creation Time) ---")
         for project in projects:
             desc = project.description if project.description else "No description"
-            print(f"  [ID: {project.id}...] | Name: {project.title} | Desc: {desc}")
+            print(f"  [ID: {project.id}] | Name: {project.title} | Desc: {desc}")
 
     def edit_project(self, args: str):
         """Implements US (2): Edit Project."""
@@ -120,7 +119,7 @@ class CLIApp:
 
         try:
             project = self._service.update_project(project_id, new_title, new_description)
-            print(f"SUCCESS: Project ID {project_id}... updated to '{project.title}'")
+            print(f"SUCCESS: Project ID {project_id} updated to '{project.title}'")
         except ValueError as e:
             print(f"[ERROR] Could not update project: {e}")
 
@@ -133,7 +132,7 @@ class CLIApp:
 
         try:
             if self._service.delete_project(project_id):
-                print(f"SUCCESS: Project ID {project_id}... deleted (and all associated tasks).")
+                print(f"SUCCESS: Project ID {project_id} deleted (and all associated tasks).")
             else:
                 print(f"[ERROR] Project with ID '{project_id}' not found.")
         except Exception as e:
@@ -211,7 +210,7 @@ class CLIApp:
 
         try:
             task = self._service.update_task(task_id, new_title, new_description, new_deadline)
-            print(f"SUCCESS: Task ID {task_id}... updated to '{task.title}'")
+            print(f"SUCCESS: Task ID {task_id} updated to '{task.title}'")
         except ValueError as e:
             print(f"[ERROR] Could not update task: {e}")
 
@@ -224,7 +223,7 @@ class CLIApp:
 
         try:
             if self._service.delete_task(task_id):
-                print(f"SUCCESS: Task ID {task_id}... deleted.")
+                print(f"SUCCESS: Task ID {task_id} deleted.")
             else:
                 print(f"[ERROR] Task with ID '{task_id}' not found.")
         except Exception as e:
