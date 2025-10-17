@@ -1,5 +1,6 @@
 # src/data/repository.py
 
+from datetime import datetime
 from typing import List, Optional
 from src.core.models import Project, Task
 from src.core.config import Config
@@ -103,4 +104,34 @@ class ProjectRepository:
         self._tasks.append(task)
         return task
 
-    # Additional task CRUD methods (get, update, delete) will be added later.
+    def get_task_by_id(self, task_id: str) -> Optional[Task]:
+        """Finds a task by its unique ID across all projects."""
+        return next((t for t in self._tasks if t.id == task_id), None)
+
+    def update_task(self, task_id: str, new_title: str, new_description: Optional[str],
+                    new_deadline: Optional[datetime]) -> Task:
+        """Updates a task's title, description, and deadline."""
+        task = self.get_task_by_id(task_id)
+        if not task:
+            raise ValueError(f"Task with ID '{task_id}' not found.")
+
+        task.title = new_title
+        task.description = new_description
+        task.deadline = new_deadline
+        return task
+
+    def delete_task(self, task_id: str) -> bool:
+        """US (6): Deletes a specific task."""
+        initial_count = len(self._tasks)
+        self._tasks = [t for t in self._tasks if t.id != task_id]
+        return len(self._tasks) < initial_count
+
+    def change_task_status(self, task_id: str, new_status: str) -> Task:
+        """US (7): Changes the status of a specific task."""
+        task = self.get_task_by_id(task_id)
+        if not task:
+            raise ValueError(f"Task with ID '{task_id}' not found.")
+
+        # The Task model's method enforces the list of VALID_TASK_STATUSES
+        task.change_status(new_status)
+        return task

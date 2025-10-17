@@ -87,4 +87,31 @@ class ToDoService:
 
         return self._repo.get_tasks_by_project(project_id)
 
-    # Full Task CRUD (Edit, Delete, Change Status) methods will be added as part of the next feature.
+    # --- Task Management Services (Full Task CRUD) ---
+
+    # add_task_to_project, list_tasks_by_project are already implemented.
+
+    def get_task(self, task_id: str) -> Optional[Task]:
+        """Retrieves a single task by ID."""
+        return self._repo.get_task_by_id(task_id)
+
+    def update_task(self, task_id: str, title: str, description: Optional[str] = None,
+                    deadline: Optional[datetime] = None) -> Task:
+        """US (5): Updates an existing task, including basic length validation."""
+
+        # Simple string length validation at the service layer
+        if not (0 < len(title) <= 30):
+            raise ValueError(f"Title must be between 1 and 30 characters.")
+        if description and len(description) > 150:
+            raise ValueError(f"Description cannot exceed 150 characters.")
+
+        return self._repo.update_task(task_id, title, description, deadline)
+
+    def delete_task(self, task_id: str) -> bool:
+        """US (6): Deletes a task."""
+        return self._repo.delete_task(task_id)
+
+    def change_task_status(self, task_id: str, new_status: str) -> Task:
+        """US (7): Changes the status of a task."""
+        # Repository/Model handles the status validation (todo, doing, done).
+        return self._repo.change_task_status(task_id, new_status)
