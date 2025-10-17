@@ -91,7 +91,7 @@ class CLIApp:
 
         try:
             project = self._service.create_project(title, description)
-            print(f"SUCCESS: Project '{project.title}' created with ID: {project.id[:8]}...")
+            print(f"SUCCESS: Project '{project.title}' created with ID: {project.id}")
         except (ValueError, OverflowError) as e:
             print(f"[ERROR] Could not create project: {e}")
 
@@ -106,7 +106,7 @@ class CLIApp:
         print("\n--- Projects List (Sorted by Creation Time) ---")
         for project in projects:
             desc = project.description if project.description else "No description"
-            print(f"  [ID: {project.id[:8]}...] | Name: {project.title} | Desc: {desc}")
+            print(f"  [ID: {project.id}...] | Name: {project.title} | Desc: {desc}")
 
     def edit_project(self, args: str):
         """Implements US (2): Edit Project."""
@@ -120,7 +120,7 @@ class CLIApp:
 
         try:
             project = self._service.update_project(project_id, new_title, new_description)
-            print(f"SUCCESS: Project ID {project_id[:8]}... updated to '{project.title}'")
+            print(f"SUCCESS: Project ID {project_id}... updated to '{project.title}'")
         except ValueError as e:
             print(f"[ERROR] Could not update project: {e}")
 
@@ -133,7 +133,7 @@ class CLIApp:
 
         try:
             if self._service.delete_project(project_id):
-                print(f"SUCCESS: Project ID {project_id[:8]}... deleted (and all associated tasks).")
+                print(f"SUCCESS: Project ID {project_id}... deleted (and all associated tasks).")
             else:
                 print(f"[ERROR] Project with ID '{project_id}' not found.")
         except Exception as e:
@@ -163,7 +163,7 @@ class CLIApp:
         try:
             task = self._service.add_task_to_project(project_id, title, description, deadline)
             print(
-                f"SUCCESS: Task '{task.title}' added to Project ID {project_id[:8]}... with Task ID: {task.id[:8]}...")
+                f"SUCCESS: Task '{task.title}' added to Project ID {project_id[:8]}... with Task ID: {task.id}")
         except (ValueError, OverflowError) as e:
             print(f"[ERROR] Could not add task: {e}")
 
@@ -177,14 +177,14 @@ class CLIApp:
         try:
             tasks = self._service.list_tasks_by_project(project_id)
             if not tasks:
-                print(f"Project ID {project_id[:8]}... found, but has no tasks.")
+                print(f"Project ID {project_id} found, but has no tasks.")
                 return
 
-            print(f"\n--- Tasks for Project ID {project_id[:8]}... ---")
+            print(f"\n--- Tasks for Project ID {project_id[:8]} ---")
             for task in tasks:
                 deadline_str = task.deadline.strftime("%Y-%m-%d") if task.deadline else "N/A"
                 print(
-                    f"  [ID: {task.id[:8]}...] | Status: {task.status.upper():<5} | Deadline: {deadline_str:<10} | Title: {task.title}")
+                    f"  [ID: {task.id}] | Status: {task.status.upper():<5} | Deadline: {deadline_str:<10} | Title: {task.title}")
                 if task.description:
                     print(f"    Desc: {task.description}")
         except ValueError as e:
@@ -211,7 +211,7 @@ class CLIApp:
 
         try:
             task = self._service.update_task(task_id, new_title, new_description, new_deadline)
-            print(f"SUCCESS: Task ID {task_id[:8]}... updated to '{task.title}'")
+            print(f"SUCCESS: Task ID {task_id}... updated to '{task.title}'")
         except ValueError as e:
             print(f"[ERROR] Could not update task: {e}")
 
@@ -224,7 +224,7 @@ class CLIApp:
 
         try:
             if self._service.delete_task(task_id):
-                print(f"SUCCESS: Task ID {task_id[:8]}... deleted.")
+                print(f"SUCCESS: Task ID {task_id}... deleted.")
             else:
                 print(f"[ERROR] Task with ID '{task_id}' not found.")
         except Exception as e:
