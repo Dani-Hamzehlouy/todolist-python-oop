@@ -6,16 +6,8 @@ from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.core.exceptions.repository_exceptions import EntityNotFoundError, UniqueConstraintError
 from src.core.models.project import Project
-
-try:  # Placeholder imports until real exceptions exist
-    from src.core.exceptions import EntityNotFoundError, UniqueConstraintError
-except ImportError:  # pragma: no cover - placeholding during scaffolding
-    class EntityNotFoundError(Exception):
-        """Raised when an entity cannot be located."""
-
-    class UniqueConstraintError(Exception):
-        """Raised when a uniqueness rule is violated."""
 
 
 class ProjectRepository(ABC):

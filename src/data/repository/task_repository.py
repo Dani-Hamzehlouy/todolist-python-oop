@@ -7,16 +7,8 @@ from typing import List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from src.core.exceptions.repository_exceptions import EntityNotFoundError, UniqueConstraintError
 from src.core.models.task import Task
-
-try:  # Placeholder exception imports
-    from src.core.exceptions import EntityNotFoundError, UniqueConstraintError
-except ImportError:  # pragma: no cover
-    class EntityNotFoundError(Exception):
-        """Raised when an entity cannot be located."""
-
-    class UniqueConstraintError(Exception):
-        """Raised when a uniqueness rule is violated."""
 
 
 class TaskRepository(ABC):
