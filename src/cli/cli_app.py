@@ -108,7 +108,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             project = project_service.create_project(title, description)
@@ -123,7 +123,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             projects = project_service.list_projects()
@@ -160,7 +160,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             project = project_service.update_project(project_id, new_title, new_description)
@@ -185,7 +185,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             project_service.delete_project(project_id)
@@ -224,7 +224,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             task = task_service.create_task(project_id, title, description, deadline)
@@ -251,7 +251,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             tasks = task_service.list_tasks(project_id)
@@ -301,7 +301,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             task = task_service.update_task(
@@ -331,7 +331,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             task_service.delete_task(task_id)
@@ -358,7 +358,7 @@ class CLIApp:
         project_repo = SqlAlchemyProjectRepository(session)
         task_repo = SqlAlchemyTaskRepository(session)
         project_service = ProjectService(project_repo)
-        task_service = TaskService(project_repo, task_repo)
+        task_service = TaskService(task_repo, project_repo)
 
         try:
             task = task_service.update_task(task_id, status=new_status)
