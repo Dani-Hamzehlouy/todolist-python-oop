@@ -7,6 +7,7 @@ from typing import Generator, List
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from src.api.schemas.common import ApiResponse, ErrorResponse
 from src.api.schemas.project import ProjectCreate, ProjectResponse, ProjectUpdate
 from src.core.exceptions.service_exceptions import ServiceError
 from src.core.services.project_service import ProjectService
@@ -38,13 +39,14 @@ def _raise_http_error(exc: ServiceError) -> None:
         status_code = status.HTTP_409_CONFLICT
     else:
         status_code = status.HTTP_400_BAD_REQUEST
-    raise HTTPException(status_code=status_code, detail=message)
+    error = ErrorResponse(status="error", message=message)
+    raise HTTPException(status_code=status_code, detail=error.model_dump())
 
 
 @router.post(
     "",
     status_code=status.HTTP_201_CREATED,
-    response_model=ProjectResponse,
+    response_model=ApiResponse,
 )
 def create_project(
     payload: ProjectCreate,
@@ -52,22 +54,24 @@ def create_project(
 ) -> ProjectResponse:
     try:
         project = service.create_project(name=payload.name, description=payload.description)
-        return ProjectResponse.model_validate(project, from_attributes=True)
+        data = ProjectResponse.model_validate(project, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Project created.")
     except ServiceError as exc:
         _raise_http_error(exc)
 
 
-@router.get("", response_model=List[ProjectResponse])
+@router.get("", response_model=ApiResponse)
 def list_projects(
     service: ProjectService = Depends(get_project_service),
 ) -> List[ProjectResponse]:
     projects = service.list_projects()
-    return [ProjectResponse.model_validate(project, from_attributes=True) for project in projects]
+    data = [ProjectResponse.model_validate(project, from_attributes=True) for project in projects]
+    return ApiResponse(status="success", data=data, message="Projects retrieved.")
 
 
 @router.get(
     "/{project_id}",
-    response_model=ProjectResponse,
+    response_model=ApiResponse,
 )
 def get_project(
     project_id: int,
@@ -75,14 +79,15 @@ def get_project(
 ) -> ProjectResponse:
     try:
         project = service.get_project(project_id)
-        return ProjectResponse.model_validate(project, from_attributes=True)
+        data = ProjectResponse.model_validate(project, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Project retrieved.")
     except ServiceError as exc:
         _raise_http_error(exc)
 
 
 @router.put(
     "/{project_id}",
-    response_model=ProjectResponse,
+    response_model=ApiResponse,
 )
 def replace_project(
     project_id: int,
@@ -91,14 +96,15 @@ def replace_project(
 ) -> ProjectResponse:
     try:
         project = service.update_project(project_id, name=payload.name, description=payload.description)
-        return ProjectResponse.model_validate(project, from_attributes=True)
+        data = ProjectResponse.model_validate(project, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Project replaced.")
     except ServiceError as exc:
         _raise_http_error(exc)
 
 
 @router.patch(
     "/{project_id}",
-    response_model=ProjectResponse,
+    response_model=ApiResponse,
 )
 def update_project(
     project_id: int,
@@ -113,7 +119,8 @@ def update_project(
 
     try:
         project = service.update_project(project_id, name=payload.name, description=payload.description)
-        return ProjectResponse.model_validate(project, from_attributes=True)
+        data = ProjectResponse.model_validate(project, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Project updated.")
     except ServiceError as exc:
         _raise_http_error(exc)
 

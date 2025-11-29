@@ -7,6 +7,7 @@ from typing import Generator, List
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
+from src.api.schemas.common import ApiResponse, ErrorResponse
 from src.api.schemas.task import TaskCreate, TaskResponse, TaskUpdate
 from src.core.exceptions.service_exceptions import ServiceError
 from src.core.services.project_service import ProjectService
@@ -41,13 +42,14 @@ def _raise_http_error(exc: ServiceError) -> None:
         status_code = status.HTTP_409_CONFLICT
     else:
         status_code = status.HTTP_400_BAD_REQUEST
-    raise HTTPException(status_code=status_code, detail=message)
+    error = ErrorResponse(status="error", message=message)
+    raise HTTPException(status_code=status_code, detail=error.model_dump())
 
 
 @router.post(
     "/projects/{project_id}/tasks",
     status_code=status.HTTP_201_CREATED,
-    response_model=TaskResponse,
+    response_model=ApiResponse,
 )
 def create_task(
     project_id: int,
@@ -61,14 +63,15 @@ def create_task(
             description=payload.description,
             deadline=payload.deadline,
         )
-        return TaskResponse.model_validate(task, from_attributes=True)
+        data = TaskResponse.model_validate(task, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Task created.")
     except ServiceError as exc:
         _raise_http_error(exc)
 
 
 @router.get(
     "/projects/{project_id}/tasks",
-    response_model=List[TaskResponse],
+    response_model=ApiResponse,
 )
 def list_tasks(
     project_id: int,
@@ -76,14 +79,15 @@ def list_tasks(
 ) -> List[TaskResponse]:
     try:
         tasks = service.list_tasks(project_id)
-        return [TaskResponse.model_validate(task, from_attributes=True) for task in tasks]
+        data = [TaskResponse.model_validate(task, from_attributes=True) for task in tasks]
+        return ApiResponse(status="success", data=data, message="Tasks retrieved.")
     except ServiceError as exc:
         _raise_http_error(exc)
 
 
 @router.get(
     "/tasks/{task_id}",
-    response_model=TaskResponse,
+    response_model=ApiResponse,
 )
 def get_task(
     task_id: int,
@@ -91,14 +95,15 @@ def get_task(
 ) -> TaskResponse:
     try:
         task = service.get_task(task_id)
-        return TaskResponse.model_validate(task, from_attributes=True)
+        data = TaskResponse.model_validate(task, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Task retrieved.")
     except ServiceError as exc:
         _raise_http_error(exc)
 
 
 @router.patch(
     "/tasks/{task_id}",
-    response_model=TaskResponse,
+    response_model=ApiResponse,
 )
 def update_task(
     task_id: int,
@@ -119,7 +124,8 @@ def update_task(
             status=payload.status.value if payload.status else None,
             deadline=payload.deadline,
         )
-        return TaskResponse.model_validate(task, from_attributes=True)
+        data = TaskResponse.model_validate(task, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Task updated.")
     except ServiceError as exc:
         _raise_http_error(exc)
 
