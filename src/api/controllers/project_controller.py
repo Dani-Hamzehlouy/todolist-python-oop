@@ -108,7 +108,7 @@ def replace_project(
     service: ProjectService = Depends(get_project_service),
 ) -> ProjectResponse:
     try:
-        project = service.update_project(project_id, name=payload.name, description=payload.description)
+        project = service.replace_project(project_id, name=payload.name, description=payload.description)
         data = ProjectResponse.model_validate(project, from_attributes=True)
         return ApiResponse(status="success", data=data, message="Project replaced.")
     except ServiceError as exc:
@@ -129,7 +129,7 @@ def update_project(
     if payload.name is None and payload.description is None:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="At least one field must be provided to update.",
+            detail=ErrorResponse(status="error", message="At least one field must be provided to update.").model_dump(),
         )
 
     try:

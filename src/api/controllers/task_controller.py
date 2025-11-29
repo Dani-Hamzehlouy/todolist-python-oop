@@ -108,6 +108,40 @@ def get_task(
         _raise_http_error(exc)
 
 
+@router.put(
+    "/tasks/{task_id}",
+    response_model=ApiResponse,
+    summary="Replace a task",
+    description="Fully replace a task's fields. Requires title, description, status, and deadline values.",
+)
+def replace_task(
+    task_id: int,
+    payload: TaskUpdate,
+    service: TaskService = Depends(get_task_service),
+) -> ApiResponse:
+    if not all([payload.title, payload.description, payload.status, payload.deadline]):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ErrorResponse(
+                status="error",
+                message="title, description, status, and deadline are required for replacement.",
+            ).model_dump(),
+        )
+
+    try:
+        task = service.replace_task(
+            task_id,
+            title=payload.title,
+            description=payload.description,
+            status=payload.status.value if payload.status else None,
+            deadline=payload.deadline,
+        )
+        data = TaskResponse.model_validate(task, from_attributes=True)
+        return ApiResponse(status="success", data=data, message="Task replaced.")
+    except ServiceError as exc:
+        _raise_http_error(exc)
+
+
 @router.patch(
     "/tasks/{task_id}",
     response_model=ApiResponse,

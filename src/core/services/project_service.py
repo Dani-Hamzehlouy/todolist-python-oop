@@ -52,12 +52,35 @@ class ProjectService:
         except EntityNotFoundError as exc:
             raise ServiceError(str(exc)) from exc
 
+    def replace_project(
+        self,
+        project_id: int,
+        name: Optional[str],
+        description: Optional[str],
+    ) -> Project:
+        if name is None:
+            raise ServiceError("Project name is required.")
+
+        self._validate_name(name)
+        self._validate_description(description)
+
+        try:
+            return self._repository.update(project_id, name, description)
+        except EntityNotFoundError as exc:
+            raise ServiceError(str(exc)) from exc
+        except UniqueConstraintError as exc:
+            raise ServiceError(str(exc)) from exc
+
     def update_project(
         self,
         project_id: int,
+        *,
         name: Optional[str] = None,
         description: Optional[str] = None,
     ) -> Project:
+        if name is None and description is None:
+            raise ServiceError("No valid fields provided for update.")
+
         if name is not None:
             self._validate_name(name)
         if description is not None:

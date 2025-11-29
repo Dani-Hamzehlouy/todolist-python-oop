@@ -77,18 +77,71 @@ class TaskService:
         except EntityNotFoundError as exc:
             raise ServiceError(str(exc)) from exc
 
-    def update_task(self, task_id: int, **kwargs) -> Task:
-        if "title" in kwargs:
-            self._validate_title(kwargs["title"])
-        if "description" in kwargs:
-            self._validate_description(kwargs["description"])
-        if "status" in kwargs:
-            self._validate_status(kwargs["status"])
-        if "deadline" in kwargs:
-            self._ensure_datetime(kwargs["deadline"], "Deadline")
+    def replace_task(
+        self,
+        task_id: int,
+        title: Optional[str],
+        description: Optional[str],
+        status: Optional[str],
+        deadline: Optional[datetime],
+    ) -> Task:
+        fields = {
+            "title": title,
+            "description": description,
+            "status": status,
+            "deadline": deadline,
+        }
+        missing = [name for name, value in fields.items() if value is None]
+        if missing:
+            raise ServiceError(f"Missing required fields for full replacement: {', '.join(missing)}.")
+
+        self._validate_title(title)  # type: ignore[arg-type]
+        self._validate_description(description)
+        self._validate_status(status)  # type: ignore[arg-type]
+        self._ensure_datetime(deadline, "Deadline")
 
         try:
-            return self._task_repository.update(task_id, **kwargs)
+            return self._task_repository.update(
+                task_id,
+                title=title,
+                description=description,
+                status=status,
+                deadline=deadline,
+            )
+        except EntityNotFoundError as exc:
+            raise ServiceError(str(exc)) from exc
+
+    def update_task(
+        self,
+        task_id: int,
+        *,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        status: Optional[str] = None,
+        deadline: Optional[datetime] = None,
+        **extra_fields,
+    ) -> Task:
+        updates = {}
+        if title is not None:
+            self._validate_title(title)
+            updates["title"] = title
+        if description is not None:
+            self._validate_description(description)
+            updates["description"] = description
+        if status is not None:
+            self._validate_status(status)
+            updates["status"] = status
+        if deadline is not None:
+            self._ensure_datetime(deadline, "Deadline")
+            updates["deadline"] = deadline
+
+        updates.update(extra_fields)
+
+        if not updates:
+            raise ServiceError("No valid fields provided for update.")
+
+        try:
+            return self._task_repository.update(task_id, **updates)
         except EntityNotFoundError as exc:
             raise ServiceError(str(exc)) from exc
 
