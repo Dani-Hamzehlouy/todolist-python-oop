@@ -14,7 +14,7 @@ from src.core.services.project_service import ProjectService
 from src.data.repository.project_repository import SqlAlchemyProjectRepository
 from src.db.session import SessionLocal
 
-router = APIRouter(prefix="/api/projects", tags=["projects"])
+router = APIRouter(prefix="/api/projects", tags=["Project Management"])
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -47,6 +47,9 @@ def _raise_http_error(exc: ServiceError) -> None:
     "",
     status_code=status.HTTP_201_CREATED,
     response_model=ApiResponse,
+    summary="Create a project",
+    description="Create a new project by providing its name and optional description. "
+    "The request enforces business rules such as name length and total project capacity.",
 )
 def create_project(
     payload: ProjectCreate,
@@ -60,7 +63,12 @@ def create_project(
         _raise_http_error(exc)
 
 
-@router.get("", response_model=ApiResponse)
+@router.get(
+    "",
+    response_model=ApiResponse,
+    summary="List all projects",
+    description="Return all projects stored in the system, ordered by creation time.",
+)
 def list_projects(
     service: ProjectService = Depends(get_project_service),
 ) -> List[ProjectResponse]:
@@ -72,6 +80,8 @@ def list_projects(
 @router.get(
     "/{project_id}",
     response_model=ApiResponse,
+    summary="Retrieve a project",
+    description="Fetch a single project by its identifier. Returns 404 if the project does not exist.",
 )
 def get_project(
     project_id: int,
@@ -88,6 +98,9 @@ def get_project(
 @router.put(
     "/{project_id}",
     response_model=ApiResponse,
+    summary="Replace a project",
+    description="Fully replace an existing project with the provided data. "
+    "Validates name and description according to business rules.",
 )
 def replace_project(
     project_id: int,
@@ -105,6 +118,8 @@ def replace_project(
 @router.patch(
     "/{project_id}",
     response_model=ApiResponse,
+    summary="Update project fields",
+    description="Partially update a project. Allows changing name, description, or both.",
 )
 def update_project(
     project_id: int,
@@ -128,6 +143,8 @@ def update_project(
 @router.delete(
     "/{project_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a project",
+    description="Remove a project and all associated tasks. Responds with 204 on success.",
 )
 def delete_project(
     project_id: int,

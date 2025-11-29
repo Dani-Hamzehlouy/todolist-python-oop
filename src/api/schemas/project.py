@@ -11,8 +11,12 @@ from pydantic import BaseModel, ConfigDict, Field
 class ProjectCreate(BaseModel):
     """Input model for creating a project."""
 
-    name: str = Field(..., min_length=3, max_length=255)
-    description: Optional[str] = Field(None, min_length=10)
+    name: str = Field(..., min_length=3, max_length=255, description="Project name (3-255 chars).")
+    description: Optional[str] = Field(
+        None,
+        min_length=10,
+        description="Optional project description with at least 10 characters.",
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -27,8 +31,17 @@ class ProjectCreate(BaseModel):
 class ProjectUpdate(BaseModel):
     """Input model for partial project updates."""
 
-    name: Optional[str] = Field(None, min_length=3, max_length=255)
-    description: Optional[str] = Field(None, min_length=10)
+    name: Optional[str] = Field(
+        None,
+        min_length=3,
+        max_length=255,
+        description="Project name (3-255 chars).",
+    )
+    description: Optional[str] = Field(
+        None,
+        min_length=10,
+        description="Optional project description with at least 10 characters.",
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -43,10 +56,10 @@ class ProjectUpdate(BaseModel):
 class ProjectResponse(BaseModel):
     """Response model returned to API clients."""
 
-    id: int
-    name: str
-    description: Optional[str]
-    created_at: Optional[datetime]
+    id: int = Field(..., description="Unique project identifier.")
+    name: str = Field(..., description="Project name.")
+    description: Optional[str] = Field(None, description="Detailed project description, when provided.")
+    created_at: Optional[datetime] = Field(None, description="Timestamp when the project was created.")
 
     model_config = ConfigDict(
         from_attributes=True,

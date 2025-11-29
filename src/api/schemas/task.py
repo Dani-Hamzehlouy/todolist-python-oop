@@ -20,9 +20,13 @@ class TaskStatus(str, Enum):
 class TaskCreate(BaseModel):
     """Input payload for creating a task."""
 
-    title: str = Field(..., min_length=3, max_length=255)
-    description: Optional[str] = Field(None, min_length=10)
-    deadline: Optional[datetime]
+    title: str = Field(..., min_length=3, max_length=255, description="Task title (3-255 chars).")
+    description: Optional[str] = Field(
+        None,
+        min_length=10,
+        description="Optional task description with at least 10 characters.",
+    )
+    deadline: Optional[datetime] = Field(None, description="Optional deadline (ISO 8601).")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -38,10 +42,22 @@ class TaskCreate(BaseModel):
 class TaskUpdate(BaseModel):
     """Input payload for partial task updates."""
 
-    title: Optional[str] = Field(None, min_length=3, max_length=255)
-    description: Optional[str] = Field(None, min_length=10)
-    status: Optional[TaskStatus]
-    deadline: Optional[datetime]
+    title: Optional[str] = Field(
+        None,
+        min_length=3,
+        max_length=255,
+        description="Task title (3-255 chars).",
+    )
+    description: Optional[str] = Field(
+        None,
+        min_length=10,
+        description="Optional task description with at least 10 characters.",
+    )
+    status: Optional[TaskStatus] = Field(
+        None,
+        description="Task status (pending, doing, done).",
+    )
+    deadline: Optional[datetime] = Field(None, description="Optional deadline (ISO 8601).")
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -57,13 +73,13 @@ class TaskUpdate(BaseModel):
 class TaskResponse(BaseModel):
     """Response payload returned to API clients."""
 
-    id: int
-    project_id: int
-    title: str
-    description: Optional[str]
-    status: TaskStatus
-    deadline: Optional[datetime]
-    at_closed: Optional[datetime]
+    id: int = Field(..., description="Unique task identifier.")
+    project_id: int = Field(..., description="Identifier of the parent project.")
+    title: str = Field(..., description="Task title.")
+    description: Optional[str] = Field(None, description="Extended task description, when present.")
+    status: TaskStatus = Field(..., description="Current status of the task.")
+    deadline: Optional[datetime] = Field(None, description="Deadline timestamp.")
+    at_closed: Optional[datetime] = Field(None, description="Timestamp when task was closed, if any.")
 
     model_config = ConfigDict(
         from_attributes=True,

@@ -16,7 +16,7 @@ from src.data.repository.project_repository import SqlAlchemyProjectRepository
 from src.data.repository.task_repository import SqlAlchemyTaskRepository
 from src.db.session import SessionLocal
 
-router = APIRouter(prefix="/api", tags=["tasks"])
+router = APIRouter(prefix="/api", tags=["Task Management"])
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -50,6 +50,9 @@ def _raise_http_error(exc: ServiceError) -> None:
     "/projects/{project_id}/tasks",
     status_code=status.HTTP_201_CREATED,
     response_model=ApiResponse,
+    summary="Create a task",
+    description="Add a new task under the specified project. "
+    "Task limits, project existence, and field validations are enforced.",
 )
 def create_task(
     project_id: int,
@@ -72,6 +75,8 @@ def create_task(
 @router.get(
     "/projects/{project_id}/tasks",
     response_model=ApiResponse,
+    summary="List tasks for a project",
+    description="Retrieve every task that belongs to the given project identifier.",
 )
 def list_tasks(
     project_id: int,
@@ -88,6 +93,8 @@ def list_tasks(
 @router.get(
     "/tasks/{task_id}",
     response_model=ApiResponse,
+    summary="Retrieve a task",
+    description="Return a single task by ID. Responds with 404 if the task does not exist.",
 )
 def get_task(
     task_id: int,
@@ -104,6 +111,8 @@ def get_task(
 @router.patch(
     "/tasks/{task_id}",
     response_model=ApiResponse,
+    summary="Update a task",
+    description="Partially update task fields such as title, description, status, or deadline.",
 )
 def update_task(
     task_id: int,
@@ -133,6 +142,8 @@ def update_task(
 @router.delete(
     "/tasks/{task_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a task",
+    description="Remove a task permanently. Responds with 204 even if no body is returned.",
 )
 def delete_task(
     task_id: int,
