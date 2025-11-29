@@ -78,3 +78,20 @@ Start the CLI application using the Poetry runner:
 
 ```bash
 poetry run python main.py
+```
+
+---
+
+## Phase 3 – Web API
+
+The new FastAPI service will eventually replace the CLI. Start it locally with Poetry:
+
+```bash
+poetry run uvicorn src.api.main:app --reload
+```
+
+Then verify it responds:
+
+```bash
+curl http://127.0.0.1:8000/health
+```
