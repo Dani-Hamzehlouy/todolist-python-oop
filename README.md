@@ -95,3 +95,13 @@ Then verify it responds:
 ```bash
 curl http://127.0.0.1:8000/health
 ```
+
+---
+
+## CLI Deprecation Notice
+
+Beginning with Phase 3, the FastAPI Web API is the primary interface for ToDoList, and the CLI remains only for short-term backward compatibility. The CLI still runs, but you will see deprecation warnings encouraging you to switch to the API. Run the new API with:
+
+```bash
+poetry run uvicorn src.api.main:app --reload
+```

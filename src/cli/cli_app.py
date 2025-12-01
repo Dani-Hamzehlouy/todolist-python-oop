@@ -1,3 +1,5 @@
+"""Deprecated CLI interface retained temporarily for Phase 3 compatibility."""
+
 # src/cli/cli_app.py (FULL UPDATE)
 
 from datetime import datetime  # Needed to parse dates from user input
@@ -10,6 +12,19 @@ from src.data.repository.project_repository import SqlAlchemyProjectRepository
 from src.data.repository.task_repository import SqlAlchemyTaskRepository
 from src.db.session import SessionLocal
 
+_warning_printed = False
+
+
+def print_cli_deprecation_warning() -> None:
+    """Emit the CLI deprecation warning once per process run."""
+    global _warning_printed
+    if not _warning_printed:
+        print(
+            "WARNING: The CLI interface is deprecated and will be removed in a future version. "
+            "Please use the FastAPI Web API instead."
+        )
+        _warning_printed = True
+
 
 class CLIApp:
     """
@@ -18,6 +33,7 @@ class CLIApp:
     """
 
     def __init__(self, service=None):
+        print_cli_deprecation_warning()
         self._service = service  # maintained for backward compatibility; no longer used
         self.running = True
         self.commands = {
